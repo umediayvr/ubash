@@ -1,0 +1,22 @@
+#!/bin/bash
+
+# prepares for the initialization of umedia environment by setting
+# the main environments that are required to get the user up running under upipe domain.
+# This file is expected to be called by the ~/.bashrc
+
+# checking if upipe root is set
+if [ -z "$UPIPE_ROOT" ]; then
+  echo "UPIPE_ROOT IS NOT SET, ARE YOU UNDER UPIPE DOMAIN ?"
+else
+  # tells what is the host type, for instance wk=umedia-wk-0003
+  export UMEDIA_HOST_TYPE=`echo $HOSTNAME | grep -oE '[a-z]*' | head -n 2 | tail -n 1`
+  export UMEDIA_LOCAL_DATA="$HOME/.umedia"
+
+  export UAPPS_ROOT="$UPIPE_ROOT/apps"
+  export ULIBS_ROOT="$UPIPE_ROOT/libs"
+  export UPLUGINS_ROOT="$UPIPE_ROOT/plugins"
+
+  export UCORE_VERSION="latest"
+  export UCORE_ROOT="$UPIPE_ROOT/ucore/$UCORE_VERSION"
+  export UCORE_LOCAL="$HOME/ucore"
+fi
