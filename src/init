@@ -1,0 +1,13 @@
+#!/bin/bash
+
+# should be called after ./env as a separated call, so letting users to be able
+# to override locally (~/.bashrc) any environment value that was previously set
+# during the ./env execution. This file is expected to be called under ~/.bashrc
+
+# checking if it's being triggered under upipe domain
+if [ -z "$UPIPE_ROOT" ]; then
+  echo "UPIPE_ROOT IS NOT SET, ARE YOU UNDER UPIPE DOMAIN ?"
+else
+  # initializing ucore
+  source $UCORE_ROOT/env/init
+fi
