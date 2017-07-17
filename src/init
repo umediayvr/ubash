@@ -1,13 +1,33 @@
 #!/bin/bash
 
-# should be called after ./env as a separated call, so letting users to be able
-# to override locally (~/.bashrc) any environment value that was previously set
-# during the ./env execution. This file is expected to be called under ~/.bashrc
+#          ,.,
+#         MMMM_    ,..,
+#           "_ "__"UVER          ,.......,,
+#    ,..., __." --"    ,.,     _-"UFACILITY
+#    "UCORE___ "_._   MMM"_."" _ """"""""""
+#    """""    "" , \_.   "_. ."
+#           ,., _"__ \__./ ."
+#          MMMMM_"  "_    ./
+#           ''''      (    )
+#    ._______________.-'____"---._.
+#     \                          /
+#      \________________________/
+#      (_)                    (_)
+#
+# Should be called after ./env as a separated call inside of ~./bashrc. Therefore,
+# letting users to be able to override locally any environment value that was previously set
+# during the ./env execution.
 
 # checking if it's being triggered under upipe domain
 if [ -z "$UPIPE_ROOT" ]; then
-  echo "UPIPE_ROOT IS NOT SET, ARE YOU UNDER UPIPE DOMAIN ?"
+  echo "UPIPE_ROOT IS NOT SET, ARE YOU UNDER UPIPE ENV ?"
 else
+  # initializing ufacility
+  source $UFACILITY_ROOT/$UFACILITY_VERSION/init
+
+  # initializing uversion
+  source $UVER_ROOT/$UVER_VERSION/init
+
   # initializing ucore
-  source $UCORE_ROOT/env/init
+  source $UCORE_ROOT/$UCORE_VERSION/init
 fi
