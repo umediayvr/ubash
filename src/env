@@ -8,15 +8,30 @@
 if [ -z "$UPIPE_ROOT" ]; then
   echo "UPIPE_ROOT IS NOT SET, ARE YOU UNDER UPIPE DOMAIN ?"
 else
-  # tells what is the host type, for instance wk=umedia-wk-0003
-  export UMEDIA_HOST_TYPE=`echo $HOSTNAME | grep -oE '[a-z]*' | head -n 2 | tail -n 1`
-  export UMEDIA_LOCAL_DATA="$HOME/.umedia"
-
+  # non-versioned environments
   export UAPPS_ROOT="$UPIPE_ROOT/apps"
   export ULIBS_ROOT="$UPIPE_ROOT/libs"
+  export USYSTEMLIBS_ROOT="$UPIPE_ROOT/systemlibs"
   export UPLUGINS_ROOT="$UPIPE_ROOT/plugins"
 
+  # ufacility
+  export UFACILITY_VERSION="latest"
+  export UFACILITY_ROOT="$UPIPE_ROOT/ufacility"
+
+  # ideally it should be defined as part of the OS image deployed to the users,
+  # however if not defined then it should fallback to "van"
+  if [ -z "$UFACILITY_NAME" ]; then
+    export UFACILITY_NAME="van"
+  fi
+
+  # uver
+  export UVER_VERSION="latest"
+  export UVER_ROOT="$UPIPE_ROOT/uver"
+  export UVER_LOCAL="$HOME/upipe/uver"
+
+  # ucore
   export UCORE_VERSION="latest"
-  export UCORE_ROOT="$UPIPE_ROOT/ucore/$UCORE_VERSION"
-  export UCORE_LOCAL="$HOME/ucore"
+  export UCORE_ROOT="$UPIPE_ROOT/ucore"
+  # ucore local is used to let the user to have custom overrides
+  export UCORE_LOCAL="$HOME/upipe/ucore"
 fi
