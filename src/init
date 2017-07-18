@@ -22,12 +22,36 @@
 if [ -z "$UPIPE_ROOT" ]; then
   echo "UPIPE_ROOT IS NOT SET, ARE YOU UNDER UPIPE ENV ?"
 else
-  # initializing ufacility
+
+  # by default the version of the versioned depedencies is driven by their
+  # respective version environment. However when ubash is set to "stable" or
+  # "beta" this value can be used to drive the defaults of the versioned depedencies
+  # that have not been defined yet
+  if [ "$UBASH_VERSION" == "stable" ] || [ "$UBASH_VERSION" == "beta" ]; then
+
+    # in case ufacility version has not been defined
+    if [ -z "$UFACILITY_VERSION" ]; then
+      export UFACILITY_VERSION=$UBASH_VERSION
+    fi
+
+    # in case uver version has not been defined
+    if [ -z "$UVER_VERSION" ]; then
+      export UVER_VERSION=$UBASH_VERSION
+    fi
+
+    # in case ucore version has not been defined
+    if [ -z "$UCORE_VERSION" ]; then
+      export UCORE_VERSION=$UBASH_VERSION
+    fi
+  fi
+
+  # initializing depedencies:
+  # ufacility
   source $UFACILITY_ROOT/$UFACILITY_VERSION/init
 
-  # initializing uversion
+  # uversion
   source $UVER_ROOT/$UVER_VERSION/init
 
-  # initializing ucore
+  # ucore
   source $UCORE_ROOT/$UCORE_VERSION/init
 fi
