@@ -8,14 +8,24 @@
 if [ -z "$UPIPE_ROOT" ]; then
   echo "UPIPE_ROOT IS NOT SET, ARE YOU UNDER UPIPE DOMAIN ?"
 else
+
+  # backward compatibility necessary to handle ~/.bashrc files
+  # that are still pointing to latest
+  # \todo: it should be removed in future releases
+  if [ "$UBASH_VERSION" == "latest" ]; then
+    export UBASH_VERSION="stable"
+  fi
+
   # non-versioned environments
   export UAPPS_ROOT="$UPIPE_ROOT/apps"
   export ULIBS_ROOT="$UPIPE_ROOT/libs"
   export USYSTEMLIBS_ROOT="$UPIPE_ROOT/systemlibs"
   export UPLUGINS_ROOT="$UPIPE_ROOT/plugins"
 
-  # ufacility
-  export UFACILITY_VERSION="latest"
+  # versioned environments: the versioned variables are initialized
+  # automatically during ./init (in case they have not been defined yet).
+  # The versioned variables follow the convention: $<DEPENDENCY_NAME>_VERSION :
+  # ufacility (versioned)
   export UFACILITY_ROOT="$UPIPE_ROOT/ufacility"
 
   # ideally it should be defined as part of the OS image deployed to the users,
@@ -24,13 +34,11 @@ else
     export UFACILITY_NAME="van"
   fi
 
-  # uver
-  export UVER_VERSION="latest"
+  # uver (versioned)
   export UVER_ROOT="$UPIPE_ROOT/uver"
   export UVER_LOCAL="$HOME/upipe/uver"
 
-  # ucore
-  export UCORE_VERSION="latest"
+  # ucore (versioned)
   export UCORE_ROOT="$UPIPE_ROOT/ucore"
   # ucore local is used to let the user to have custom overrides
   export UCORE_LOCAL="$HOME/upipe/ucore"
