@@ -24,24 +24,31 @@ if [ -z "$UPIPE_ROOT" ]; then
 else
 
   # by default the version of the versioned depedencies is driven by their
-  # respective version environment. However when ubash is set to "stable" or
+  # respective version environment. However when ubash is set to either "stable" or
   # "beta" this value can be used to drive the defaults of the versioned depedencies
-  # that have not been defined yet
+  # that have not been defined yet. When that happens the target version of the symlinks
+  # "stable" or "beta" is assigned to the versioned variables, this is necessary to
+  # make sure that the environment is going to be the same, no matter what. Therefore,
+  # further changes in the "stable" or "beta" symlinks should not affect the environments
+  # bellow, since they are only carrying the "versions" rather than symlinks
   if [ "$UBASH_VERSION" == "stable" ] || [ "$UBASH_VERSION" == "beta" ]; then
+
+    # converting ubash to the current target version
+    export UBASH_VERSION=$("readlink $UFACILITY_ROOT/$UBASH_VERSION")
 
     # in case ufacility version has not been defined
     if [ -z "$UFACILITY_VERSION" ]; then
-      export UFACILITY_VERSION=$UBASH_VERSION
+      export UFACILITY_VERSION=$("readlink $UFACILITY_ROOT/$UBASH_VERSION")
     fi
 
     # in case uver version has not been defined
     if [ -z "$UVER_VERSION" ]; then
-      export UVER_VERSION=$UBASH_VERSION
+      export UVER_VERSION==$("readlink $UVER_ROOT/$UBASH_VERSION")
     fi
 
     # in case ucore version has not been defined
     if [ -z "$UCORE_VERSION" ]; then
-      export UCORE_VERSION=$UBASH_VERSION
+      export UCORE_VERSION=$("readlink $UCORE_ROOT/$UBASH_VERSION")
     fi
   fi
 
