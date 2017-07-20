@@ -9,13 +9,6 @@ if [ -z "$UPIPE_ROOT" ]; then
   echo "UPIPE_ROOT IS NOT SET, ARE YOU UNDER UPIPE DOMAIN ?"
 else
 
-  # backward compatibility necessary to handle ~/.bashrc files
-  # that are still pointing to latest
-  # \todo: it should be removed in future releases
-  if [ "$UBASH_VERSION" == "latest" ]; then
-    export UBASH_VERSION="stable"
-  fi
-
   # non-versioned environments
   export UAPPS_ROOT="$UPIPE_ROOT/apps"
   export ULIBS_ROOT="$UPIPE_ROOT/libs"
