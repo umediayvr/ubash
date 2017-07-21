@@ -43,7 +43,7 @@ else
 
     # in case uver version has not been defined
     if [ -z "$UVER_VERSION" ]; then
-      export UVER_VERSION==$("readlink $UVER_ROOT/$UBASH_VERSION")
+      export UVER_VERSION=$("readlink $UVER_ROOT/$UBASH_VERSION")
     fi
 
     # in case ucore version has not been defined
