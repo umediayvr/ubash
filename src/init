@@ -34,7 +34,7 @@ else
   if [ "$UBASH_VERSION" == "stable" ] || [ "$UBASH_VERSION" == "beta" ]; then
 
     # converting ubash to the current target version
-    export UBASH_VERSION=$("readlink $UFACILITY_ROOT/$UBASH_VERSION")
+    export UBASH_VERSION=$("readlink $UBASH_ROOT/$UBASH_VERSION")
 
     # in case ufacility version has not been defined
     if [ -z "$UFACILITY_VERSION" ]; then
