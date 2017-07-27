@@ -23,14 +23,14 @@ if [ -z "$UPIPE_ROOT" ]; then
   echo "UPIPE_ROOT IS NOT SET, ARE YOU UNDER UPIPE ENV ?"
 else
 
-  # by default the version of the versioned depedencies is driven by their
+  # by default the version of versioned depedencies is driven by their
   # respective version environment. However when ubash is set to either "stable" or
   # "beta" this value can be used to drive the defaults of the versioned depedencies
   # that have not been defined yet. When that happens the target version of the symlinks
   # "stable" or "beta" is assigned to the versioned variables, this is necessary to
   # make sure that the environment is going to be the same, no matter what. Therefore,
-  # further changes in the "stable" or "beta" symlinks should not affect the environments
-  # bellow, since they are only carrying the "versions" rather than symlinks
+  # further changes in the "stable" or "beta" symlinks should not affect the current environment
+  # bellow, since they are carrying the target semver rather than symlinks
   if [ "$UBASH_VERSION" == "stable" ] || [ "$UBASH_VERSION" == "beta" ]; then
 
     # converting ubash to the current target version
