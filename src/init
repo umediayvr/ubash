@@ -7,58 +7,75 @@
 #    "UCORE___ "_._   MMM"_."" _ """"""""""
 #    """""    "" , \_.   "_. ."
 #           ,., _"__ \__./ ."
-#          MMMMM_"  "_    ./
+#       ULAUNCHER_"  "_    ./
 #           ''''      (    )
 #    ._______________.-'____"---._.
-#     \                          /
+#     \          UMEDIA          /
 #      \________________________/
 #      (_)                    (_)
 #
 # Should be called after ./env as a separated call inside of ~./bashrc. Therefore,
-# letting users to be able to override locally any environment value that was previously set
-# during the ./env execution.
+# letting users to be able to override locally any environment value that was previously
+# set during ./env execution.
 
 # checking if it's being triggered under upipe domain
 if [ -z "$UPIPE_ROOT" ]; then
-  echo "UPIPE_ROOT IS NOT SET, ARE YOU UNDER UPIPE ENV ?"
+  echo "UPIPE_ROOT IS NOT SET, ARE YOU UNDER UPIPE ENV ?" >&2
 else
 
   # by default the version of versioned depedencies is driven by their
   # respective version environment. However when ubash is set to either "stable" or
   # "beta" this value can be used to drive the defaults of the versioned depedencies
-  # that have not been defined yet. When that happens the target version of the symlinks
-  # "stable" or "beta" is assigned to the versioned variables, this is necessary to
-  # make sure that the environment is going to be the same, no matter what. Therefore,
-  # further changes in the "stable" or "beta" symlinks should not affect the current environment
-  # bellow, since they are carrying the target semver rather than symlinks
-  if [ "$UBASH_VERSION" == "stable" ] || [ "$UBASH_VERSION" == "beta" ]; then
+  # that have not been defined yet. Also, if the target of versioned depedencies is a
+  # symlink it is going to extract the target and assign to the version variable.
+  # This is necessary to ensure the environment is going to be the same, no matter
+  # what. Therefore, any changes in symlinks aka "stable" or "beta" is not goint
+  # to affect the current environment.
+  versionedNames="UFACILITY UVER UCORE ULAUNCHER"
+  autoAssignTypes="stable beta"
+  bashVersionType=$UBASH_VERSION
+  for versioned in $versionedNames
+  do
+    versionedRootName="${versioned}_ROOT"
+    versionedRootValue="${!versionedRootName}"
+    versionedVersionName="${versioned}_VERSION"
+    versionedVersionValue="${!versionedVersionName}"
 
-    # converting ubash to the current target version
-    export UBASH_VERSION=$("readlink $UBASH_ROOT/$UBASH_VERSION")
-
-    # in case ufacility version has not been defined
-    if [ -z "$UFACILITY_VERSION" ]; then
-      export UFACILITY_VERSION=$("readlink $UFACILITY_ROOT/$UBASH_VERSION")
+    # when bash version is assigned with stable or beta and the versioned does not
+    # have a value assigned to it.
+    if [[ -z "$versionedVersionValue" && "$autoAssignTypes" == *"$bashVersionType"* ]]; then
+      versionedVersionValue=$bashVersionType
     fi
 
-    # in case uver version has not been defined
-    if [ -z "$UVER_VERSION" ]; then
-      export UVER_VERSION=$("readlink $UVER_ROOT/$UBASH_VERSION")
+    # showing an error when versioned is not defined at this point
+    if [ -z "$versionedVersionValue" ]; then
+      echo "uver error: $versioned version is not defined (\$$versionedVersionName)!" >&2
+      continue
     fi
 
-    # in case ucore version has not been defined
-    if [ -z "$UCORE_VERSION" ]; then
-      export UCORE_VERSION=$("readlink $UCORE_ROOT/$UBASH_VERSION")
+    # additionally, if versioned target is a symlink, lets assign the target rather than
+    # keeping a symlink that may change...
+    versionedTarget="$versionedRootValue/$versionedVersionValue"
+    if [[ -L "$versionedTarget" && -d "$versionedTarget" ]]; then
+      versionedVersionValue=$(readlink "$versionedTarget")
     fi
-  fi
 
-  # initializing depedencies:
-  # ufacility
-  source $UFACILITY_ROOT/$UFACILITY_VERSION/init
+    # exporting the final version of the versioned variable
+    export "$versionedVersionName"=$versionedVersionValue
 
-  # uversion
-  source $UVER_ROOT/$UVER_VERSION/init
+    # initializing versioned
+    versionedLocation="$versionedRootValue/$versionedVersionValue"
+    if [ -d "$versionedLocation" ]; then
 
-  # ucore
-  source $UCORE_ROOT/$UCORE_VERSION/init
+      # sourcing init file when necessary
+      initFile="$versionedLocation/init"
+      if [ -f "$initFile" ]; then
+        source $versionedLocation/init
+      fi
+
+      # otherwise something went wrong...
+    else
+      echo "uver error: $versioned could not be localized ($versionedLocation)!" >&2
+    fi
+  done
 fi
