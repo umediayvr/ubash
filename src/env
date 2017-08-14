@@ -6,7 +6,7 @@
 
 # checking if upipe root is set
 if [ -z "$UPIPE_ROOT" ]; then
-  echo "UPIPE_ROOT IS NOT SET, ARE YOU UNDER UPIPE DOMAIN ?"
+  echo "UPIPE_ROOT IS NOT SET, ARE YOU UNDER UPIPE DOMAIN ?" >&2
 else
 
   # non-versioned environments
@@ -35,4 +35,7 @@ else
   export UCORE_ROOT="$UPIPE_ROOT/ucore"
   # ucore local is used to let the user to have custom overrides
   export UCORE_LOCAL="$HOME/upipe/ucore"
+
+  # ulauncher (versioned)
+  export ULAUNCHER_ROOT="$UPIPE_ROOT/ulauncher"
 fi
