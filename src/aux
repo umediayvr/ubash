@@ -1,0 +1,15 @@
+#!/bin/bash
+
+# Environments/scripts that can only be defined/started after the
+# versioned environments have been resolved. This file gets sourced
+# automatically before the versioned scripts initialization.
+
+# uver versions directory
+if [ -z "$UVER_VERSIONS_DIR" ]; then
+  export UVER_VERSIONS_DIR="$UVER_ROOT/$UVER_VERSION/versions"
+fi
+
+# ulauncher config directory
+if [ -z "$ULAUNCHER_CONFIG_DIR" ]; then
+  export ULAUNCHER_CONFIG_DIR="$ULAUNCHER_ROOT/$ULAUNCHER_VERSION/config"
+fi

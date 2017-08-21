@@ -22,6 +22,8 @@
 if [ -z "$UPIPE_ROOT" ]; then
   echo "UPIPE_ROOT IS NOT SET, ARE YOU UNDER UPIPE ENV ?" >&2
 else
+  # current dir
+  dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
   # by default the version of versioned depedencies is driven by their
   # respective version environment. However when ubash is set to either "stable" or
@@ -62,6 +64,20 @@ else
 
     # exporting the final version of the versioned variable
     export "$versionedVersionName"=$versionedVersionValue
+  done
+
+  # running auxiliary envs after the versioned envs have been resolved and
+  # before the initialization of the versioned scripts (since the scripts
+  # may use them)
+  source $dir/aux
+
+  # running versioned initialization
+  for versioned in $versionedNames
+  do
+    versionedRootName="${versioned}_ROOT"
+    versionedRootValue="${!versionedRootName}"
+    versionedVersionName="${versioned}_VERSION"
+    versionedVersionValue="${!versionedVersionName}"
 
     # initializing versioned
     versionedLocation="$versionedRootValue/$versionedVersionValue"
