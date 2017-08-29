@@ -34,7 +34,7 @@ else
   # what. Therefore, any changes in symlinks aka "stable" or "beta" is not goint
   # to affect the current environment.
   versionedNames="UFACILITY UVER UCORE ULAUNCHER"
-  autoAssignTypes="stable beta"
+  autoAssignTypes="stable beta alpha"
   bashVersionType=$UBASH_VERSION
   for versioned in $versionedNames
   do
