@@ -6,7 +6,7 @@
 # the auxiliary variables.
 
 # uver versions directory
-export UVER_VERSIONS_DIR="$UVER_VERSIONS_DIR"
+export UVER_VERSIONS_DIR=$(eval "echo $UVER_VERSIONS_DIR")
 
 # ulauncher config directory
-export ULAUNCHER_CONFIG_DIR="$ULAUNCHER_CONFIG_DIR"
+export ULAUNCHER_CONFIG_DIR=$(eval "echo $ULAUNCHER_CONFIG_DIR")
