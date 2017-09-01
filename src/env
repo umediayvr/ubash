@@ -15,27 +15,35 @@ else
   export USYSTEMLIBS_ROOT="$UPIPE_ROOT/systemlibs"
   export UPLUGINS_ROOT="$UPIPE_ROOT/plugins"
 
-  # versioned environments: the versioned variables are initialized
-  # automatically during ./init (in case they have not been defined yet).
+  # versioned environments: the versioned variables are assigned with a
+  # proper version automatically during ./init (in case they have not been defined yet).
   # The versioned variables follow the convention: $<DEPENDENCY_NAME>_VERSION :
+
   # ufacility (versioned)
   export UFACILITY_ROOT="$UPIPE_ROOT/ufacility"
 
-  # ideally it should be defined as part of the OS image deployed to the users,
-  # however if not defined then it should fallback to "van"
-  if [ -z "$UFACILITY_NAME" ]; then
-    export UFACILITY_NAME="van"
-  fi
+  # TODO: ideally it should be defined as part of the OS image deployed to the
+  # users
+  export UFACILITY_NAME="van"
+  export UFACILITY_VERSION=""
 
   # uver (versioned)
   export UVER_ROOT="$UPIPE_ROOT/uver"
   export UVER_LOCAL="$HOME/upipe/uver"
+  export UVER_VERSION=""
 
   # ucore (versioned)
   export UCORE_ROOT="$UPIPE_ROOT/ucore"
   export UCORE_LOCAL="$HOME/upipe/ucore"
+  export UCORE_VERSION=""
 
   # ulauncher (versioned)
   export ULAUNCHER_ROOT="$UPIPE_ROOT/ulauncher"
   export ULAUNCHER_LOCAL="$HOME/upipe/ulauncher"
+  export ULAUNCHER_VERSION=""
+
+  # auxiliary variables default value (they get expanded automatically, during
+  # 'aux' execution)
+  export UVER_VERSIONS_DIR='$UVER_ROOT/$UVER_VERSION/versions'
+  export ULAUNCHER_CONFIG_DIR='$ULAUNCHER_ROOT/$ULAUNCHER_VERSION/config'
 fi
