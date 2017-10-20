@@ -9,8 +9,9 @@ if [ -z "$UPIPE_ROOT" ]; then
   echo "UPIPE_ROOT IS NOT SET, ARE YOU UNDER UPIPE DOMAIN ?" >&2
 else
 
-  # non-versioned environments
+  # auxiliary environments
   export UAPPS_ROOT="$UPIPE_ROOT/apps"
+  export UTOOLS_ROOT="$UPIPE_ROOT/tools"
   export ULIBS_ROOT="$UPIPE_ROOT/libs"
   export USYSTEMLIBS_ROOT="$UPIPE_ROOT/systemlibs"
   export UPLUGINS_ROOT="$UPIPE_ROOT/plugins"
