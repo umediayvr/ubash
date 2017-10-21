@@ -4,46 +4,21 @@
 # the main environments that are required to get the user up running under upipe domain.
 # This file is expected to be called by the ~/.bashrc
 
-# checking if upipe root is set
-if [ -z "$UPIPE_ROOT" ]; then
-  echo "UPIPE_ROOT IS NOT SET, ARE YOU UNDER UPIPE DOMAIN ?" >&2
-else
+# TODO: ideally it should be defined as part of the OS image deployed to the
+# users
+export UFACILITY_NAME="van"
+export UFACILITY_VERSION=""
 
-  # auxiliary environments
-  export UAPPS_ROOT="$UPIPE_ROOT/apps"
-  export UTOOLS_ROOT="$UPIPE_ROOT/tools"
-  export ULIBS_ROOT="$UPIPE_ROOT/libs"
-  export UPLUGINS_ROOT="$UPIPE_ROOT/plugins"
+# uver (versioned)
+export UVER_VERSION=""
 
-  # versioned environments: the versioned variables are assigned with a
-  # proper version automatically during ./init (in case they have not been defined yet).
-  # The versioned variables follow the convention: $<DEPENDENCY_NAME>_VERSION :
+# ucore (versioned)
+export UCORE_VERSION=""
 
-  # ufacility (versioned)
-  export UFACILITY_ROOT="$UPIPE_ROOT/ufacility"
+# ulauncher (versioned)
+export ULAUNCHER_VERSION=""
 
-  # TODO: ideally it should be defined as part of the OS image deployed to the
-  # users
-  export UFACILITY_NAME="van"
-  export UFACILITY_VERSION=""
-
-  # uver (versioned)
-  export UVER_ROOT="$UPIPE_ROOT/uver"
-  export UVER_LOCAL="$HOME/upipe/uver"
-  export UVER_VERSION=""
-
-  # ucore (versioned)
-  export UCORE_ROOT="$UPIPE_ROOT/ucore"
-  export UCORE_LOCAL="$HOME/upipe/ucore"
-  export UCORE_VERSION=""
-
-  # ulauncher (versioned)
-  export ULAUNCHER_ROOT="$UPIPE_ROOT/ulauncher"
-  export ULAUNCHER_LOCAL="$HOME/upipe/ulauncher"
-  export ULAUNCHER_VERSION=""
-
-  # auxiliary variables default value (they get expanded automatically, during
-  # 'aux' execution)
-  export UVER_VERSIONS_DIR='$UVER_ROOT/$UVER_VERSION/versions'
-  export ULAUNCHER_CONFIG_DIR='$ULAUNCHER_ROOT/$ULAUNCHER_VERSION/config'
-fi
+# auxiliary variables default value (they get expanded automatically, during
+# 'aux' execution)
+export UVER_VERSIONS_DIR='$(locres "uver/$UVER_VERSION")/versions'
+export ULAUNCHER_CONFIG_DIR='$(locres "ulauncher/$ULAUNCHER_VERSION")/config'

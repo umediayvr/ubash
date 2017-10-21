@@ -18,12 +18,25 @@
 # letting users to be able to override locally any environment value that was previously
 # set during ./env execution.
 
+# backward compatibility
+# todo: remove it in future releases
+if [ -z "$UPIPE_PATH" ]; then
+  export UPIPE_PATH="$UPIPE_ROOT"
+fi
+
 # checking if it's being triggered under upipe domain
-if [ -z "$UPIPE_ROOT" ]; then
-  echo "UPIPE_ROOT IS NOT SET, ARE YOU UNDER UPIPE ENV ?" >&2
+if [ -z "$UPIPE_PATH" ]; then
+  echo "UPIPE_PATH IS NOT SET, ARE YOU UNDER UPIPE ENV ?" >&2
 else
   # current dir
   dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+  # adding ubash bin path to the environment
+  ubashBinPath+="$dir/bin"
+  if ! [ "$UBASH_BIN_PATH" == "$ubashBinPath" ]; then
+    export UBASH_BIN_PATH=$ubashBinPath
+    export PATH="$UBASH_BIN_PATH:$PATH"
+  fi
 
   # by default the version of versioned depedencies is driven by their
   # respective version environment. However when ubash is set to either "stable" or
@@ -38,8 +51,6 @@ else
   bashVersionType=$UBASH_VERSION
   for versioned in $versionedNames
   do
-    versionedRootName="${versioned}_ROOT"
-    versionedRootValue="${!versionedRootName}"
     versionedVersionName="${versioned}_VERSION"
     versionedVersionValue="${!versionedVersionName}"
 
@@ -57,7 +68,7 @@ else
 
     # additionally, if versioned target is a symlink, lets assign the target rather than
     # keeping a symlink that may change...
-    versionedTarget="$versionedRootValue/$versionedVersionValue"
+    versionedTarget="$( locres ${versioned~~} )/$versionedVersionValue"
     if [[ -L "$versionedTarget" && -d "$versionedTarget" ]]; then
       versionedVersionValue=$(readlink "$versionedTarget")
     fi
@@ -65,6 +76,15 @@ else
     # exporting the final version of the versioned variable
     export "$versionedVersionName"=$versionedVersionValue
   done
+
+  # querying the target version from the symlink about ubash's version
+  if [ "$autoAssignTypes" == *"$bashVersionType"* ]; then
+    ubashVersionedTarget="$UBASH_ROOT/$UBASH_VERSION"
+    if [[ -L "$ubashVersionedTarget" && -d "$ubashVersionedTarget" ]]; then
+      ubashVersionValue=$(readlink "$ubashVersionedTarget")
+      export UBASH_VERSION="$ubashVersionValue"
+    fi
+  fi
 
   # running auxiliary envs after the versioned envs have been resolved and
   # before the initialization of the versioned scripts (since the scripts
@@ -74,13 +94,11 @@ else
   # running versioned initialization
   for versioned in $versionedNames
   do
-    versionedRootName="${versioned}_ROOT"
-    versionedRootValue="${!versionedRootName}"
     versionedVersionName="${versioned}_VERSION"
     versionedVersionValue="${!versionedVersionName}"
 
     # initializing versioned
-    versionedLocation="$versionedRootValue/$versionedVersionValue"
+    versionedLocation="$( locres ${versioned~~} )/$versionedVersionValue"
     if [ -d "$versionedLocation" ]; then
 
       # sourcing init file when necessary
