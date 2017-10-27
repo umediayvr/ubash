@@ -1,0 +1,28 @@
+#!/bin/bash
+
+# Returns resolved full path for a resource under UPIPE_PATH
+# first argument: resource relative location (app/maya/$UVER_MAYA_VERSION)
+function locateResource()
+{
+  local resource=$1
+  local locations=$(echo $UPIPE_PATH | tr ":" "\n")
+  local foundLocation=""
+  for location in $locations
+  do
+    # making sure the location is not have an empty
+    if [ -d "$location" ] && [ -d "$location/$resource" ]; then
+      foundLocation="$location/$resource"
+      break
+    fi
+  done
+
+  # in case the resouce was not localized showing it as stderr
+  if [ -z "$foundLocation" ]; then
+    echo "Could not locate resource \"$resource\" under \$UPIPE_PATH" >&2
+  # otherwise returning the valid path
+  else
+    echo "$foundLocation"
+  fi
+}
+
+locateResource $1
