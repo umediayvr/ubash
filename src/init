@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #          ,.,
-#         MMMM_    ,..,
+#         UEVENTS_    ,..,
 #           "_ "__"UVER          ,.......,,
 #    ,..., __." --"    ,.,     _-"UFACILITY
 #    "UCORE___ "_._   MMM"_."" _ """"""""""
@@ -18,15 +18,16 @@
 # letting users to be able to override locally any environment value that was previously
 # set during ./env execution.
 
-# backward compatibility
-# todo: remove it in future releases
+# auto-assigning UPIPE_PATH based on UPIPE_ROOT (when necessary)
 if [ -z "$UPIPE_PATH" ]; then
   export UPIPE_PATH="$UPIPE_ROOT"
 fi
 
 # checking if it's being triggered under upipe domain
-if [ -z "$UPIPE_PATH" ]; then
-  echo "UPIPE_PATH IS NOT SET, ARE YOU UNDER UPIPE ENV ?" >&2
+if [ -z "$UPIPE_ROOT" ]; then
+  echo "UPIPE_ROOT IS NOT DEFINED, ARE YOU UNDER UPIPE ENV ?" >&2
+elif [ -z "$UPIPE_PATH" ]; then
+  echo "UPIPE_PATH IS NOT DEFINED, ARE YOU UNDER UPIPE ENV ?" >&2
 else
   # current dir
   dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
@@ -46,7 +47,7 @@ else
   # This is necessary to ensure the environment is going to be the same, no matter
   # what. Therefore, any changes in symlinks aka "stable" or "beta" is not goint
   # to affect the current environment.
-  versionedNames="UFACILITY UVER UCORE ULAUNCHER"
+  versionedNames="UCORE UFACILITY UVER ULAUNCHER UEVENTS"
   autoAssignTypes="stable beta alpha"
   bashVersionType=$UBASH_VERSION
   for versioned in $versionedNames
@@ -66,9 +67,19 @@ else
       continue
     fi
 
+    # looking for the versioned first under the upipe root (root repository), it that
+    # is not there yet then try to find it using locres (in case it's a module that
+    # is still under development)
+    versionedTarget="$UPIPE_ROOT/${versioned~~}/$versionedVersionValue"
+
+    if ! [[ -d "$versionedTarget" ]]; then
+      # in case the module is not release yet under UPIPE_ROOT, make sure you
+      # have the symlinks "alpha, beta and stable" for the dev module.
+      versionedTarget="$( locres ${versioned~~}/$versionedVersionValue )"
+    fi
+
     # additionally, if versioned target is a symlink, lets assign the target rather than
     # keeping a symlink that may change...
-    versionedTarget="$( locres ${versioned~~} )/$versionedVersionValue"
     if [[ -L "$versionedTarget" && -d "$versionedTarget" ]]; then
       versionedVersionValue=$(readlink "$versionedTarget")
     fi
@@ -78,7 +89,7 @@ else
   done
 
   # querying the target version from the symlink about ubash's version
-  if [ "$autoAssignTypes" == *"$bashVersionType"* ]; then
+  if [[ "$autoAssignTypes" == *"$bashVersionType"* ]]; then
     ubashVersionedTarget="$UBASH_ROOT/$UBASH_VERSION"
     if [[ -L "$ubashVersionedTarget" && -d "$ubashVersionedTarget" ]]; then
       ubashVersionValue=$(readlink "$ubashVersionedTarget")
@@ -98,7 +109,7 @@ else
     versionedVersionValue="${!versionedVersionName}"
 
     # initializing versioned
-    versionedLocation="$( locres ${versioned~~} )/$versionedVersionValue"
+    versionedLocation="$( locres ${versioned~~}/$versionedVersionValue )"
     if [ -d "$versionedLocation" ]; then
 
       # sourcing init file when necessary
