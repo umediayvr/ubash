@@ -5,7 +5,7 @@ import qbs.FileInfo
 Project {
   id: main
   property string name: "ubash"
-  property string version: "0.5.0"
+  property string version: "0.6.0"
   property string releaseType
 
   Application {
