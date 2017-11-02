@@ -90,7 +90,7 @@ else
 
   # querying the target version from the symlink about ubash's version
   if [[ "$autoAssignTypes" == *"$bashVersionType"* ]]; then
-    ubashVersionedTarget="$UBASH_ROOT/$UBASH_VERSION"
+    ubashVersionedTarget="$dir"
     if [[ -L "$ubashVersionedTarget" && -d "$ubashVersionedTarget" ]]; then
       ubashVersionValue=$(readlink "$ubashVersionedTarget")
       export UBASH_VERSION="$ubashVersionValue"
