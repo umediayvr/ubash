@@ -1,8 +1,0 @@
-#!/bin/bash
-
-if [ -z $UPIPE_DEV_ROOT ]; then
-  echo "UPIPE_DEV_ROOT is not defined"
-  exit 1
-fi
-
-qbs project.releaseType:dev qbs.installRoot:$UPIPE_DEV_ROOT
