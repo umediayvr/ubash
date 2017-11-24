@@ -50,7 +50,7 @@ else
   versionedNames="UCORE UFACILITY UVER ULAUNCHER UEVENTS"
   autoAssignTypes="stable beta alpha"
   bashVersionType=$UBASH_VERSION
-  for versioned in $versionedNames
+  for versioned in $versionedNames "UBASH";
   do
     versionedVersionName="${versioned}_VERSION"
     versionedVersionValue="${!versionedVersionName}"
@@ -63,39 +63,50 @@ else
 
     # showing an error when versioned is not defined at this point
     if [ -z "$versionedVersionValue" ]; then
-      echo "uver error: $versioned version is not defined (\$$versionedVersionName)!" >&2
+      echo "ubash error: $versioned version is not defined (\$$versionedVersionName)!" >&2
       continue
     fi
 
-    # looking for the versioned first under the upipe root (root repository), it that
-    # is not there yet then try to find it using locres (in case it's a module that
-    # is still under development)
-    versionedTarget="$UPIPE_ROOT/${versioned~~}/$versionedVersionValue"
+    # we also want to resolve the version of ubash itself, but we don't need
+    # to look for it
+    if [[ "$versioned" == "UBASH" ]]; then
+      versionedTarget="$dir"
 
-    if ! [[ -d "$versionedTarget" ]]; then
-      # in case the module is not release yet under UPIPE_ROOT, make sure you
-      # have the symlinks "alpha, beta and stable" for the dev module.
-      versionedTarget="$( locres ${versioned~~}/$versionedVersionValue )"
+    # looking for versioned targets
+    else
+      # looking for the versioned first under the upipe root (root repository), it that
+      # is not there yet then try to find it using locres (in case it's a module that
+      # is still under development)
+      versionedTarget="$UPIPE_ROOT/${versioned~~}/$versionedVersionValue"
+
+      if ! [[ -d "$versionedTarget" ]]; then
+        # in case the module is not release yet under UPIPE_ROOT, make sure you
+        # have the symlinks "alpha, beta and stable" for the dev module.
+        versionedTarget="$( locres ${versioned~~}/$versionedVersionValue )"
+      fi
     fi
 
-    # additionally, if versioned target is a symlink, lets assign the target rather than
-    # keeping a symlink that may change...
-    if [[ -L "$versionedTarget" && -d "$versionedTarget" ]]; then
-      versionedVersionValue=$(readlink "$versionedTarget")
-    fi
+    # additionally, if versioned target is a symlink, lets assign the target
+    # rather than keeping a symlink that may change...
+    # The target symlink can also be another symlink aka alpha pointing
+    # to beta and beta pointing to stable, handling that behaviour
+    for symlinkPointingTo in $autoAssignTypes;
+    do
+      if [[ -L "$versionedTarget" && -d "$versionedTarget" ]]; then
+        versionedVersionValue=$(readlink "$versionedTarget")
+        versionedVersionValue=$(basename "$versionedVersionValue")
+      fi
+
+      # when found version is not a symlink, stopping it
+      versionedTarget="$(dirname $versionedTarget)/$versionedVersionValue"
+      if ! [[ -L "$versionedTarget" && -d "$versionedTarget" ]]; then
+        break
+      fi
+    done
 
     # exporting the final version of the versioned variable
     export "$versionedVersionName"=$versionedVersionValue
   done
-
-  # querying the target version from the symlink about ubash's version
-  if [[ "$autoAssignTypes" == *"$bashVersionType"* ]]; then
-    ubashVersionedTarget="$dir"
-    if [[ -L "$ubashVersionedTarget" && -d "$ubashVersionedTarget" ]]; then
-      ubashVersionValue=$(readlink "$ubashVersionedTarget")
-      export UBASH_VERSION="$ubashVersionValue"
-    fi
-  fi
 
   # running auxiliary envs after the versioned envs have been resolved and
   # before the initialization of the versioned scripts (since the scripts
@@ -120,7 +131,7 @@ else
 
       # otherwise something went wrong...
     else
-      echo "uver error: $versioned could not be localized ($versionedLocation)!" >&2
+      echo "ubash error: $versioned could not be localized ($versionedLocation)!" >&2
     fi
   done
 fi
