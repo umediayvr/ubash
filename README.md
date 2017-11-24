@@ -25,7 +25,7 @@ ln -s 0.1.0 stable
 ```
 
 Finally, make sure your bash configuration is intializing ubash from that location:
-```
+```bash
 export UPIPE_ROOT="/data/studio/upipe"
 export UPIPE_DEV_ROOT="$HOME/.umedia/upipe"
 export UPIPE_PATH="$UPIPE_DEV_ROOT:$UPIPE_ROOT"
