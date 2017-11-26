@@ -40,12 +40,12 @@ else
   fi
 
   # by default the version of versioned depedencies is driven by their
-  # respective version environment. However when ubash is set to either "stable" or
-  # "beta" this value can be used to drive the defaults of the versioned depedencies
+  # respective version environment. However when ubash is set to "stable", "beta" or
+  # "alpha" this value can be used to drive the defaults of the versioned depedencies
   # that have not been defined yet. Also, if the target of versioned depedencies is a
   # symlink it is going to extract the target and assign to the version variable.
   # This is necessary to ensure the environment is going to be the same, no matter
-  # what. Therefore, any changes in symlinks aka "stable" or "beta" is not goint
+  # what. Therefore, any changes in symlinks aka "stable" or "beta" is not going
   # to affect the current environment.
   versionedNames="UCORE UFACILITY UVER ULAUNCHER UEVENTS"
   autoAssignTypes="stable beta alpha"
@@ -55,7 +55,7 @@ else
     versionedVersionName="${versioned}_VERSION"
     versionedVersionValue="${!versionedVersionName}"
 
-    # when bash version is assigned with stable or beta and the versioned does not
+    # when bash version is assigned with stable, beta, alpha and the versioned does not
     # have a value assigned to it.
     if [[ -z "$versionedVersionValue" && "$autoAssignTypes" == *"$bashVersionType"* ]]; then
       versionedVersionValue=$bashVersionType
@@ -74,7 +74,7 @@ else
 
     # looking for versioned targets
     else
-      # looking for the versioned first under the upipe root (root repository), it that
+      # looking for the versioned first under the upipe root (root repository), if it
       # is not there yet then try to find it using locres (in case it's a module that
       # is still under development)
       versionedTarget="$UPIPE_ROOT/${versioned~~}/$versionedVersionValue"
