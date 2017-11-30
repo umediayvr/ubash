@@ -19,6 +19,8 @@ export UCORE_VERSION=""
 export ULAUNCHER_VERSION=""
 
 # auxiliary variables default value (they get expanded automatically, during
-# 'aux' execution)
+# "aux" execution). The reason why these variables are defined here and not
+# at "aux" is because we want the user to be able to override them before
+# "init".
 export UVER_VERSIONS_DIR='$(locres "uver/$UVER_VERSION")/versions'
 export ULAUNCHER_CONFIG_DIR='$(locres "ulauncher/$ULAUNCHER_VERSION")/config'
