@@ -4,7 +4,7 @@
 Add the lines below at the end of `$HOME/.bashrc`:
 ```bash
 # umedia
-alias devenv='bash --init-file <(echo "export UPIPE_PATH=$UPIPE_DEV_ROOT:$UPIPE_PATH")'
+alias devenv='bash --init-file <(echo "source ~/.bashrc && export ISDEVENV=1 && export UPIPE_PATH=$UPIPE_DEV_ROOT:$UPIPE_PATH")'
 export UPIPE_ROOT="/data/studio/upipe"
 export UPIPE_DEV_ROOT="$HOME/.umedia/upipe"
 export UBASH_VERSION="stable"
@@ -36,7 +36,7 @@ ln -s 0.1.0 alpha
 Finally, make sure your upipe configuration is intializing ubash from that location:
 ```bash
 # umedia (dev ubash)
-alias devenv='bash --init-file <(echo "export UPIPE_PATH=$UPIPE_DEV_ROOT:$UPIPE_PATH")'
+alias devenv='bash --init-file <(echo "source ~/.bashrc && export ISDEVENV=1 && export UPIPE_PATH=$UPIPE_DEV_ROOT:$UPIPE_PATH")'
 export UPIPE_ROOT="/data/studio/upipe"
 export UPIPE_DEV_ROOT="$HOME/.umedia/upipe"
 export UBASH_VERSION="alpha" # <-
