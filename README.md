@@ -6,7 +6,7 @@ Add the lines below at the end of `$HOME/.bashrc`:
 # umedia
 alias devenv='bash --init-file <(echo "export ISDEVENV=1 && source ~/.bashrc && export UPIPE_PATH=$UPIPE_DEV_ROOT:$UPIPE_PATH")'
 if ! [[ -z "$ISDEVENV" ]]; then
-        PS1="[DEV]\[\e[38;5;204m\]\t\[\e[m\]-\[\e[38;5;33m\]\u\[\e[38;5;33m\]@\[\e[38;5;33m\]\h\[\e[m\]:\[\e[39m\]\w\[\e[m\]\$ "
+        PS1="[DEV]\[\e[39m\]\t\[\e[m\]-\[\e[39m\]\u\[\e[39m\]@\[\e[39m\]\h\[\e[m\]:\[\e[39m\]\w\[\e[m\]\$ "
 fi
 
 export UPIPE_ROOT="/data/studio/upipe"
@@ -42,7 +42,7 @@ Finally, make sure your upipe configuration is intializing ubash from that locat
 # umedia (dev ubash)
 alias devenv='bash --init-file <(echo "export ISDEVENV=1 && source ~/.bashrc && export UPIPE_PATH=$UPIPE_DEV_ROOT:$UPIPE_PATH")'
 if ! [[ -z "$ISDEVENV" ]]; then
-        PS1="[DEV]\[\e[38;5;204m\]\t\[\e[m\]-\[\e[38;5;33m\]\u\[\e[38;5;33m\]@\[\e[38;5;33m\]\h\[\e[m\]:\[\e[39m\]\w\[\e[m\]\$ "
+        PS1="[DEV]\[\e[39m\]\t\[\e[m\]-\[\e[39m\]\u\[\e[39m\]@\[\e[39m\]\h\[\e[m\]:\[\e[39m\]\w\[\e[m\]\$ "
 fi
 
 export UPIPE_ROOT="/data/studio/upipe"
