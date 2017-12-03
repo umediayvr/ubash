@@ -5,16 +5,34 @@ Add the lines below at the end of `$HOME/.bashrc`:
 ```bash
 # umedia
 export UPIPE_ROOT="/data/studio/upipe"
-export UPIPE_DEV_ROOT_TARGET="$HOME/.umedia/upipe"
-export UPIPE_PATH="$UPIPE_DEV_ROOT:$UPIPE_ROOT"
+export UPIPE_DEV_ROOT="$HOME/.umedia/upipe"
 export UBASH_VERSION="stable"
 source $UPIPE_ROOT/ubash/$UBASH_VERSION/env
 source $UPIPE_ROOT/ubash/$UBASH_VERSION/init
 ```
 
+### Overriding Versions
+Overriding versions managed by ubash (UCORE, UFACILITY, UVER, ULAUNCHER and UEVENTS):
+```bash
+# ...
+source $UPIPE_ROOT/ubash/$UBASH_VERSION/env
+# it's done between 'env' and 'init'
+export UVER_VESION="0.1.0"
+export ULAUNCHER_VESION="0.1.0"
+source $UPIPE_ROOT/ubash/$UBASH_VERSION/init
+```
+
+Overriding versions managed by uver:
+```bash
+# ...
+source $UPIPE_ROOT/ubash/$UBASH_VERSION/init
+# it's done after 'init'
+export UVER_MAYATOOLS_VERSION="0.2.0"
+```
+
 ### Activating the dev environment
 In order to activate the dev env, so upipe can be aware about the resources
-installed under "UPIPE_DEV_ROOT_TARGET", you need to run:
+installed under "UPIPE_DEV_ROOT", you need to run:
 ```bash
 devenv
 ```
@@ -46,11 +64,10 @@ Finally, make sure your upipe configuration is intializing ubash from that locat
 ```bash
 # umedia (dev ubash)
 export UPIPE_ROOT="/data/studio/upipe"
-export UPIPE_DEV_ROOT_TARGET="$HOME/.umedia/upipe"
-export UPIPE_PATH="$UPIPE_DEV_ROOT:$UPIPE_ROOT"
+export UPIPE_DEV_ROOT="$HOME/.umedia/upipe"
 export UBASH_VERSION="alpha" # <-
-source $UPIPE_DEV_ROOT_TARGET/ubash/$UBASH_VERSION/env # <-
-source $UPIPE_DEV_ROOT_TARGET/ubash/$UBASH_VERSION/init # <-
+source $UPIPE_DEV_ROOT/ubash/$UBASH_VERSION/env # <-
+source $UPIPE_DEV_ROOT/ubash/$UBASH_VERSION/init # <-
 ```
 
 ### Building ubash for the first time
