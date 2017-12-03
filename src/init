@@ -32,6 +32,12 @@ else
   # current dir
   dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
+  # development enviromnent support
+  alias devenv='bash --init-file <(echo "export UPIPE_DEV_ROOT=$UPIPE_DEV_ROOT_TARGET && source $HOME/.bashrc")'
+  if ! [[ -z "$UPIPE_DEV_ROOT" ]]; then
+    PS1="[DEV]\t-\u@\h:\w\$ "
+  fi
+
   # adding ubash bin path to the environment
   ubashBinPath+="$dir/bin"
   if ! [ "$UBASH_BIN_PATH" == "$ubashBinPath" ]; then
