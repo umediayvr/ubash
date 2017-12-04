@@ -9,7 +9,6 @@ function locateResource()
   local foundLocation=""
   for location in $locations
   do
-    # making sure the location is not have an empty
     if [ -d "$location" ] && [ -d "$location/$resource" ]; then
       foundLocation="$location/$resource"
       break
