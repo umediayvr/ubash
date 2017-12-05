@@ -2,11 +2,14 @@
 
 # prepares for the initialization of umedia environment by setting
 # the main environments that are required to get the user up running under upipe domain.
-# This file is expected to be called by the ~/.bashrc
+# This file is expected to be sourced by the ~/.bashrc
 
-# TODO: ideally it should be defined as part of the OS image deployed to the
-# users
-export UFACILITY_NAME="van"
+# default UPIPE_PATH is based UPIPE_ROOT
+# (UPIPE_DEV_ROOT is automatically prepended when running through devenv)
+export UPIPE_PATH="$UPIPE_ROOT"
+
+# ufacility (versioned)
+export UFACILITY_NAME="van" # TODO: this should be defined as part of the OS image
 export UFACILITY_VERSION=""
 
 # uver (versioned)
