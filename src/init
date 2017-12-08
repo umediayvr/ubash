@@ -55,10 +55,9 @@ else
   # This is necessary to ensure the environment is going to be the same, no matter
   # what. Therefore, any changes in symlinks aka "stable" or "beta" is not going
   # to affect the current environment.
-  versionedNames="UCORE UFACILITY UVER ULAUNCHER UEVENTS"
   autoAssignTypes="stable beta alpha"
   bashVersionType=$UBASH_VERSION
-  for versioned in $versionedNames "UBASH";
+  for versioned in $UBASH_VERSIONED_NAMES "UBASH";
   do
     versionedVersionName="${versioned}_VERSION"
     versionedVersionValue="${!versionedVersionName}"
@@ -122,7 +121,7 @@ else
   source $dir/aux
 
   # running versioned initialization
-  for versioned in $versionedNames
+  for versioned in $UBASH_VERSIONED_NAMES
   do
     versionedVersionName="${versioned}_VERSION"
     versionedVersionValue="${!versionedVersionName}"
