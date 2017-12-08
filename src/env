@@ -26,4 +26,6 @@ done
 # "init".
 export UVER_VERSIONS_DIR='$(locres "uver/$UVER_VERSION")/versions'
 export ULAUNCHER_CONFIG_DIR='$(locres "ulauncher/$ULAUNCHER_VERSION")/config'
+
+# fallback variables
 export UFACILITY_NAME="van" # TODO: this should be defined as part of the OS image
