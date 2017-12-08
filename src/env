@@ -8,18 +8,17 @@
 # (UPIPE_DEV_ROOT is automatically prepended when running through devenv)
 export UPIPE_PATH="$UPIPE_ROOT"
 
-# ufacility (versioned)
-export UFACILITY_NAME="van" # TODO: this should be defined as part of the OS image
-export UFACILITY_VERSION=""
+# list of the main versioned packages where the version can be driven
+# by the ubash release type (done inside ./init). At this point we need
+# to reset any version that may be assigned to them.
+export UBASH_VERSIONED_NAMES="UCORE UFACILITY UVER ULAUNCHER UEVENTS"
+for versioned in $UBASH_VERSIONED_NAMES;
+do
+  versionedVersionName="${versioned}_VERSION"
 
-# uver (versioned)
-export UVER_VERSION=""
-
-# ucore (versioned)
-export UCORE_VERSION=""
-
-# ulauncher (versioned)
-export ULAUNCHER_VERSION=""
+  # resetting the version
+  export "$versionedVersionName"=""
+done
 
 # auxiliary variables default value (they get expanded automatically, during
 # "aux" execution). The reason why these variables are defined here and not
@@ -27,3 +26,6 @@ export ULAUNCHER_VERSION=""
 # "init".
 export UVER_VERSIONS_DIR='$(locres "uver/$UVER_VERSION")/versions'
 export ULAUNCHER_CONFIG_DIR='$(locres "ulauncher/$ULAUNCHER_VERSION")/config'
+
+# fallback variables
+export UFACILITY_NAME="van" # TODO: this should be defined as part of the OS image
