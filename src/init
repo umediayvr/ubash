@@ -28,12 +28,17 @@ else
   dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
   # development enviromnent support:
+  # First we give users an alias command "devenv" that launches a subshell where 
+  # ISDEVENV=1 and we re-source .bashrc (and this file), resulting in a prompt cue
+  # like "[DEV][...]$" and prepending UPIPE_DEV_ROOT to UPIPE_PATH.
+  # The construct "bash init-file ..." allows us to remain in the subshell until exit.
+  alias devenv='bash --init-file <(echo "export ISDEVENV=1 && source $HOME/.bashrc")'
+
   # The intial value for UPIPE_PATH is defined inside 'env' file, however we want
   # to let the user to be able to modify this variable. Therefore, when entering in
   # devenv we just use whatever is the current value for that variable and
   # prepend the location for the UPIPE_DEV_ROOT. This is done after the
   # bashrc initialization, so keeping any tweaks that may have been done by the user.
-  alias devenv='bash --init-file <(echo "export ISDEVENV=1 && source $HOME/.bashrc")'
   if [[ "$ISDEVENV" == "1" ]]; then
     export UPIPE_PATH="$UPIPE_DEV_ROOT:$UPIPE_PATH"
     # adding as prefix a hint about the dev env
