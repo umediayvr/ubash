@@ -18,6 +18,10 @@
 # This allows users to override any Upipe environment vars established by 
 # ./env, thereby customizing their running environment. Users should export vars
 # after ./env is sourced, but before ./init is sourced by their login scripts. 
+# The Upipe vars that are set in advance with ./env indlude:
+# UPIPE_PATH, UCORE_VERSION, UFACILITY_VERSION, UVER_VERSION, ULAUNCHER_VERSION
+# UEVENTS_VERSION, UVER_VERSIONS_DIR, ULAUNCHER_CONFIG_DIR, UFACIITY_NAME
+
 
 # checking if it's being triggered under upipe domain
 if [ -z "$UPIPE_ROOT" ]; then
