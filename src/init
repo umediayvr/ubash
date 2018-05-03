@@ -14,9 +14,10 @@
 #      \________________________/
 #      (_)                    (_)
 #
-# Should be called after ./env as a separated call inside of ~./bashrc. Therefore,
-# letting users to be able to override locally any environment value that was previously
-# set during ./env execution.
+# ./init should be sourced after ./env in ~./bashrc or a similar login script. 
+# This allows users to override any Upipe environment vars established by 
+# ./env, thereby customizing their running environment. Users should export vars
+# after ./env is sourced, but before ./init is sourced by their login scripts. 
 
 # checking if it's being triggered under upipe domain
 if [ -z "$UPIPE_ROOT" ]; then
