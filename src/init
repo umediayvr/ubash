@@ -52,7 +52,10 @@ else
     export PS1="[DEV]$PS1"
   fi
 
-  # Adding UBASH_BIN_PATH to the environment and prepending it to PATH.
+  # Adding UBASH_BIN_PATH to the environment and prepending it to PATH, but only 
+  # if the version of Ubash we are running now is different than when the user's
+  # UBASH_BIN_PATH was last set. We don't want to keep prepending UBASH_BIN_PATH
+  # for new shells if the Ubash version hasn't changed.
   ubashBinPath+="$dir/bin"
   if ! [ "$UBASH_BIN_PATH" == "$ubashBinPath" ]; then
     export UBASH_BIN_PATH=$ubashBinPath
