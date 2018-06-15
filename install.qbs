@@ -5,7 +5,6 @@ import qbs.TextFile
 
 Project {
   id: main
-  property string name: "ubash"
   property string releaseType
 
   Probe {
@@ -28,12 +27,12 @@ Project {
       qbs.installPrefix: {
 
         // building the target location
-        targetPrefix = FileInfo.joinPaths(main.name, info.data.version)
+        targetPrefix = FileInfo.joinPaths(info.data.type, info.data.name, info.data.version)
 
         // making sure to never override a production release
         targetFullPath = FileInfo.joinPaths(qbs.installRoot, targetPrefix)
         if (main.releaseType == "production" && File.exists(targetFullPath)) {
-          throw new Error("Cannot override an existent production release: " + targetFullPath)
+          throw new Error("Skipping installation, cannot override an existent production release: " + targetFullPath)
         }
         console.info("Target: " + targetFullPath)
 
