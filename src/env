@@ -1,31 +1,95 @@
 #!/bin/bash
 
-# prepares for the initialization of umedia environment by setting
-# the main environments that are required to get the user up running under upipe domain.
+# prepares for the initialization of the upipe environment.
 # This file is expected to be sourced by the ~/.bashrc
 
-# default UPIPE_PATH is based UPIPE_ROOT
-# (UPIPE_DEV_ROOT is automatically prepended when running through devenv)
-export UPIPE_PATH="$UPIPE_ROOT"
+# checking if "jq" is available under the current system.
+if ! [ -x "$(command -v jq)" ]; then
+  echo 'ERROR "jq" IS NOT INSTALLED (https://stedolan.github.io/jq/download/).' >&2
+# checking if UPIPE_ROOT has been defined
+elif [ -z "$UPIPE_ROOT" ]; then
+  echo "UPIPE_ROOT IS NOT DEFINED, ARE YOU UNDER UPIPE ENV ?" >&2
+elif [ -z "$UPIPE_CORE_CONFIG" ]; then
+  echo "UPIPE_CORE_CONFIG IS NOT DEFINED, ARE YOU UNDER UPIPE ENV ?" >&2
+else
+  # current dir
+  dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
-# list of the main versioned packages where the version can be driven
-# by the ubash release type (done inside ./init). At this point we need
-# to reset any version that may be assigned to them.
-export UBASH_VERSIONED_NAMES="UCORE UFACILITY UVER ULAUNCHER UEVENTS"
-for versioned in $UBASH_VERSIONED_NAMES;
-do
-  versionedVersionName="${versioned}_VERSION"
+  # default UPIPE_PATH is based UPIPE_ROOT
+  # (UPIPE_DEV_ROOT is automatically prepended when running through devenv)
+  export UPIPE_PATH="$UPIPE_ROOT"
 
-  # resetting the version
-  export "$versionedVersionName"=""
-done
+  # location where core depedencies are localized under upipe
+  export UPIPE_CORE_MAIN="core"
 
-# auxiliary variables default value (they get expanded automatically, during
-# "aux" execution). The reason why these variables are defined here and not
-# at "aux" is because we want the user to be able to override them before
-# "init".
-export UVER_VERSIONS_DIR='$(locres "uver/$UVER_VERSION")/versions'
-export ULAUNCHER_CONFIG_DIR='$(locres "ulauncher/$ULAUNCHER_VERSION")/config'
+  # development enviromnent support:
+  # First we give users an alias command "devenv" that launches a subshell where
+  # ISDEVENV=1 and we re-source .bashrc (and this file), resulting in a prompt cue
+  # like "[DEV][...]$" and prepending UPIPE_DEV_ROOT to UPIPE_PATH.
+  # The construct "bash init-file ..." allows us to remain in the subshell until exit.
+  alias devenv='bash --init-file <(echo "export ISDEVENV=1 && source $HOME/.bashrc")'
 
-# fallback variables
-export UFACILITY_NAME="van" # TODO: this should be defined as part of the OS image
+  # This section normally only executes when a user runs 'devenv'. The default
+  # value for UPIPE_PATH is previously set by ./env, but the user may have
+  # overridden this by exporting a custom UPIPE_PATH. Therefore, when a user
+  # runs 'devenv' we use whatever is currently for UPIPE_PATH and prepend the
+  # location of UPIPE_DEV_ROOT to UPIPE_PATH. Since 'devenv' re-sources this file
+  # via ~/.bashrc, we can keep any Upipe environment tweaks the user has done as
+  # well as prepending UPIPE_DEV_ROOT and modifying their shell prompt.
+  if [[ "$ISDEVENV" == "1" ]]; then
+    export UPIPE_PATH="$UPIPE_DEV_ROOT:$UPIPE_PATH"
+    # adding [DEV] to the shell prompt as a reminder that we are in dev environment
+    export PS1="[DEV]$PS1"
+  fi
+
+  # Adding UBASH_BIN_PATH to the environment and prepending it to PATH, but only
+  # if the version of Ubash we are running now is different than when the user's
+  # UBASH_BIN_PATH was last set. We don't want to keep prepending UBASH_BIN_PATH
+  # for new shells if the Ubash version hasn't changed.
+  ubashBinPath="$dir/bin"
+  if ! [ "$UBASH_BIN_PATH" == "$ubashBinPath" ]; then
+    export UBASH_BIN_PATH=$ubashBinPath
+    export PATH="$UBASH_BIN_PATH:$PATH"
+  fi
+
+  # collecting all the dependency names through the UPIPE_PATH.
+  declare -A coreNames
+  for upipePath in $(echo $UPIPE_PATH | tr ":" "\n" | tac);
+  do
+    if ! [[ -d $upipePath ]]; then
+      continue
+    fi
+
+    for upipeItemPath in $upipePath/$UPIPE_CORE_MAIN/*;
+    do
+      if ! [[ -d $upipeItemPath ]]; then
+        continue
+      fi
+
+      coreBaseName=$(basename $upipeItemPath)
+      if ! [[ "$coreBaseName" == "ubash" ]];then
+        coreNames[$coreBaseName]=$upipeItemPath
+      fi
+    done
+  done
+
+  export UBASH_CORE_DEPENDENCIES=${!coreNames[@]}
+  unset coreNames
+
+  # cleaning up the environments related with versions of core dependencies.
+  # In case the user does not override them (between env and init) the init
+  # is going to figure out their versions.
+  for core in ${UBASH_CORE_DEPENDENCIES^^};
+  do
+    coreConfigVersion="${core}_CONFIG_VERSION"
+    coreVersion="${core}_VERSION"
+
+    if ! [[ -z "${!coreConfigVersion}" ]]; then
+      unset "$coreConfigVersion"
+    fi
+
+    if ! [[ -z "${!coreVersion}" ]]; then
+      unset "$coreVersion"
+    fi
+  done
+fi

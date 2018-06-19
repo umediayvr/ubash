@@ -1,159 +1,173 @@
 #!/bin/bash
 
-#          ,.,
-#         UEVENTS_    ,..,
-#           "_ "__"UVER          ,.......,,
-#    ,..., __." --"    ,.,     _-"UFACILITY
-#    "UCORE___ "_._   MMM"_."" _ """"""""""
-#    """""    "" , \_.   "_. ."
-#           ,., _"__ \__./ ."
-#       ULAUNCHER_"  "_    ./
-#           ''''      (    )
-#    ._______________.-'____"---._.
-#     \          UMEDIA          /
-#      \________________________/
-#      (_)                    (_)
-#
-# ./init should be sourced after ./env in ~./bashrc or a similar login script. 
-# This allows users to override any Upipe environment vars established by 
+# ./init should be sourced after ./env.
+# This allows users to override any upipe environment vars established by
 # ./env, thereby customizing their running environment. Users should export vars
-# after ./env is sourced, but before ./init is sourced by their login scripts. 
-# The Upipe vars that are set in advance with ./env indlude:
-# UPIPE_PATH, UCORE_VERSION, UFACILITY_VERSION, UVER_VERSION, ULAUNCHER_VERSION
-# UEVENTS_VERSION, UVER_VERSIONS_DIR, ULAUNCHER_CONFIG_DIR, UFACIITY_NAME
-
-
-# checking if it's being triggered under upipe domain
-if [ -z "$UPIPE_ROOT" ]; then
-  echo "UPIPE_ROOT IS NOT DEFINED, ARE YOU UNDER UPIPE ENV ?" >&2
-elif [ -z "$UPIPE_PATH" ]; then
+# after ./env is sourced, but before ./init is sourced by their login scripts.
+# The Upipe vars that are set in advance with ./env include:
+# UPIPE_PATH, USYS_VERSION, UVER_VERSION, ULAUNCHER_VERSION...
+if [ -z "$UPIPE_PATH" ]; then
   echo "UPIPE_PATH IS NOT DEFINED, DID YOU SOURCE 'ubash/env' file ?" >&2
 else
   # current dir
   dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
-  # development enviromnent support:
-  # First we give users an alias command "devenv" that launches a subshell where 
-  # ISDEVENV=1 and we re-source .bashrc (and this file), resulting in a prompt cue
-  # like "[DEV][...]$" and prepending UPIPE_DEV_ROOT to UPIPE_PATH.
-  # The construct "bash init-file ..." allows us to remain in the subshell until exit.
-  alias devenv='bash --init-file <(echo "export ISDEVENV=1 && source $HOME/.bashrc")'
-
-  # This section normally only executes when a user runs 'devenv'. The default 
-  # value for UPIPE_PATH is previously set by ./env, but the user may have 
-  # overridden this by exporting a custom UPIPE_PATH. Therefore, when a user
-  # runs 'devenv' we use whatever is currently for UPIPE_PATH and prepend the
-  # location of UPIPE_DEV_ROOT to UPIPE_PATH. Since 'devenv' re-sources this file 
-  # via ~/.bashrc, we can keep any Upipe environment tweaks the user has done as 
-  # well as prepending UPIPE_DEV_ROOT and modifying their shell prompt.
-  if [[ "$ISDEVENV" == "1" ]]; then
-    export UPIPE_PATH="$UPIPE_DEV_ROOT:$UPIPE_PATH"
-    # adding [DEV] to the shell prompt as a reminder that we are in dev environment
-    export PS1="[DEV]$PS1"
-  fi
-
-  # Adding UBASH_BIN_PATH to the environment and prepending it to PATH, but only 
-  # if the version of Ubash we are running now is different than when the user's
-  # UBASH_BIN_PATH was last set. We don't want to keep prepending UBASH_BIN_PATH
-  # for new shells if the Ubash version hasn't changed.
-  ubashBinPath+="$dir/bin"
-  if ! [ "$UBASH_BIN_PATH" == "$ubashBinPath" ]; then
-    export UBASH_BIN_PATH=$ubashBinPath
-    export PATH="$UBASH_BIN_PATH:$PATH"
-  fi
-
-  # by default the version of versioned depedencies is driven by their
-  # respective version environment. However when ubash is set to "stable", "beta" or
-  # "alpha" this value can be used to drive the defaults of the versioned depedencies
-  # that have not been defined yet. Also, if the target of versioned depedencies is a
-  # symlink it is going to extract the target and assign to the version variable.
-  # This is necessary to ensure the environment is going to be the same, no matter
-  # what. Therefore, any changes in symlinks aka "stable" or "beta" is not going
-  # to affect the current environment.
+  # by default the version of the core depedencies is driven by their
+  # respective version environment. However, when ubash version is
+  # set to "stable", "beta", "alpha" it can be used to drive the
+  # default version of core depedencies (in case their version has not
+  # been assigned explicitly such as UVER_VERSION="0.1.0" previously). Also,
+  # if the target of a core dependency is a symlink it is going to extract
+  # the version assigned used as target of the symlink. This is necessary
+  # to ensure the environment is going to be the same, no matter what. Therefore,
+  # any changes in symlinks aka "stable", "beta", "alpha" is not going to
+  # affect the current environment.
   autoAssignTypes="stable beta alpha"
   bashVersionType=$UBASH_VERSION
-  for versioned in $UBASH_VERSIONED_NAMES "UBASH";
+  declare -A coreDirectory
+  coreDirectory=(["main"]="$UPIPE_CORE_MAIN" ["config"]="$UPIPE_CORE_CONFIG")
+  for coreKind in "${!coreDirectory[@]}";
   do
-    versionedVersionName="${versioned}_VERSION"
-    versionedVersionValue="${!versionedVersionName}"
-
-    # when bash version is assigned with stable, beta, alpha and the versioned does not
-    # have a value assigned to it.
-    if [[ -z "$versionedVersionValue" && "$autoAssignTypes" == *"$bashVersionType"* ]]; then
-      versionedVersionValue=$bashVersionType
+    coreVarIdentifier=""
+    if ! [[ "$coreKind" == "main" ]]; then
+      coreVarIdentifier="_${coreKind^^}"
     fi
 
-    # showing an error when versioned is not defined at this point
-    if [ -z "$versionedVersionValue" ]; then
-      echo "ubash error: $versioned version is not defined (\$$versionedVersionName)!" >&2
-      continue
-    fi
-
-    # we also want to resolve the version of ubash itself, but we don't need
-    # to look for it
-    if [[ "$versioned" == "UBASH" ]]; then
-      versionedTarget="$dir"
-
-    # looking for versioned targets
-    else
-      # looking for the versioned first under the upipe root (root repository), if it
-      # is not there yet then try to find it using locres (in case it's a module that
-      # is still under development)
-      versionedTarget="$UPIPE_ROOT/${versioned~~}/$versionedVersionValue"
-
-      if ! [[ -d "$versionedTarget" ]]; then
-        # in case the module is not release yet under UPIPE_ROOT, make sure you
-        # have the symlinks "alpha, beta and stable" for the dev module.
-        versionedTarget="$( locres ${versioned~~}/$versionedVersionValue )"
-      fi
-    fi
-
-    # additionally, if versioned target is a symlink, lets assign the target
-    # rather than keeping a symlink that may change...
-    # The target symlink can also be another symlink aka alpha pointing
-    # to beta and beta pointing to stable, handling that behaviour
-    for symlinkPointingTo in $autoAssignTypes;
+    for core in $UBASH_CORE_DEPENDENCIES "ubash";
     do
-      if [[ -L "$versionedTarget" && -d "$versionedTarget" ]]; then
-        versionedVersionValue=$(readlink "$versionedTarget")
-        versionedVersionValue=$(basename "$versionedVersionValue")
+      coreVersionName="${core^^}${coreVarIdentifier}_VERSION"
+      coreVersionValue="${!coreVersionName}"
+
+      # when bash version is assigned with stable, beta, alpha and the core does not
+      # have a value assigned to it.
+      if [[ -z "$coreVersionValue" && "$autoAssignTypes" == *"$bashVersionType"* ]]; then
+        coreVersionValue=$bashVersionType
       fi
 
-      # when found version is not a symlink, stopping it
-      versionedTarget="$(dirname $versionedTarget)/$versionedVersionValue"
-      if ! [[ -L "$versionedTarget" && -d "$versionedTarget" ]]; then
-        break
+      # we also want to resolve the version of ubash itself, but we don't need
+      # to look for it
+      if [[ "$core" == "ubash" ]]; then
+        coreTarget="$dir"
+
+      # looking for core targets
+      else
+        # looking for the core first under the upipe root (root repository), if it
+        # is not there yet then try to find it using locres (in case it's a module that
+        # is still under development)
+        coreTarget="$UPIPE_ROOT/${coreDirectory[$coreKind]}/$core/$coreVersionValue"
+
+        if ! [[ -d "$coreTarget" ]]; then
+          # in case the module is not release yet under UPIPE_ROOT, make sure you
+          # have the symlinks "alpha, beta and stable" for the dev module.
+          coreTarget=$( locres "${coreDirectory[$coreKind]}/$core/$coreVersionValue" 2> /dev/null )
+        fi
       fi
+
+      # additionally, if core target is a symlink, lets assign the target
+      # rather than keeping a symlink that may change...
+      # The target symlink can also be another symlink aka alpha pointing
+      # to beta and beta pointing to stable, handling that behaviour
+      if [[ -z "$coreTarget" ]]; then
+        continue
+      fi
+      for symlinkPointingTo in $autoAssignTypes;
+      do
+        if [[ -L "$coreTarget" && -d "$coreTarget" ]]; then
+          coreVersionValue=$(readlink "$coreTarget")
+          coreVersionValue=$(basename "$coreVersionValue")
+        fi
+
+        # when found version is not a symlink, stopping it
+        coreTarget="$(dirname $coreTarget )/$coreVersionValue"
+        if ! [[ -L "$coreTarget" && -d "$coreTarget" ]]; then
+          break
+        fi
+      done
+
+      # exporting the final version of the core variable
+      export "$coreVersionName"=$coreVersionValue
     done
-
-    # exporting the final version of the versioned variable
-    export "$versionedVersionName"=$versionedVersionValue
   done
 
-  # running auxiliary envs after the versioned envs have been resolved and
-  # before the initialization of the versioned scripts (since the scripts
-  # may use them)
-  source $dir/aux
-
-  # running versioned initialization
-  for versioned in $UBASH_VERSIONED_NAMES
+  # running core initialization
+  declare -A coreDependencyOrder
+  for core in $UBASH_CORE_DEPENDENCIES;
   do
-    versionedVersionName="${versioned}_VERSION"
-    versionedVersionValue="${!versionedVersionName}"
-
-    # initializing versioned
-    versionedLocation="$( locres ${versioned~~}/$versionedVersionValue )"
-    if [ -d "$versionedLocation" ]; then
-
-      # sourcing init file when necessary
-      initFile="$versionedLocation/init"
-      if [ -f "$initFile" ]; then
-        source $versionedLocation/init
+    coreVersionName="${core^^}_VERSION"
+    coreVersionValue="${!coreVersionName}"
+    coreLocationInfo=$(locres "${coreDirectory[main]}/$core/$coreVersionValue/info.json")
+    if [[ -f "$coreLocationInfo" ]]; then
+      initAfterDependency=$(cat "$coreLocationInfo" | jq -r ".depends")
+      if [[ "$initAfterDependency" == "null" || -z "$initAfterDependency" ]]; then
+        initAfterDependency="ubash"
       fi
-
-      # otherwise something went wrong...
-    else
-      echo "ubash error: $versioned could not be localized ($versionedLocation)!" >&2
+      coreDependencyOrder["$initAfterDependency"]+=" $core"
     fi
   done
+
+  # figuring out the order from which the core depedencies should be initialized
+  # this is done by looking at "depends" inside of info.json in each dependency.
+  goNext="ubash"
+  while :
+  do
+    current=$(echo $goNext | cut -d' ' -f1)
+    goNext=$(echo $goNext | cut -d' ' -f2-)
+    if [[ "$goNext" == "$current" ]]; then
+      goNext=""
+    fi
+
+    # in case there is nothing else to be done
+    if [[ -z "$current" && -z "$goNext" ]]; then
+      break
+    else
+      goNext+=" ${coreDependencyOrder[$current]}"
+    fi
+
+    # figuring out if the core has a configuration associated with it.
+    # When thas is the case the environment "<CORE>_CONFIG_ROOT" is
+    # exported.
+    # Configurations can have pre and post inialization scripts which are sourced
+    # in between the core initalization.
+    coreConfigName="${current^^}_CONFIG_VERSION"
+    coreConfigValue="${!coreConfigName}"
+    configLocation=$(locres "${coreDirectory[config]}/$current/$coreConfigValue/config" 2> /dev/null)
+    if [[ ! -z "$coreConfigValue" && -d "$configLocation" ]]; then
+
+      # exporting an environment that points to the root location of the configuration
+      export "${current^^}_CONFIG_ROOT"="$configLocation"
+
+      # in case the configuration has a pre initalization script
+      configPreInitFile="$configLocation/preInit"
+      if [[ -d "$configLocation" && -f "$configPreInitFile" ]]; then
+        source $configPreInitFile
+      fi
+    fi
+
+    # initializing core
+    coreVersionName="${current^^}_VERSION"
+    coreVersionValue="${!coreVersionName}"
+    if [[ ! "$current" == "ubash" ]]; then
+      coreLocation=$(locres "${coreDirectory[main]}/$current/$coreVersionValue")
+      if [[ -d "$coreLocation" ]]; then
+
+        # sourcing the initalization of the core dependency
+        coreInit="$coreLocation/init"
+        if [ -f "$coreInit" ]; then
+          source $coreInit
+        fi
+
+        # in case the configuration has a post initalization script
+        configPostInit="$configLocation/postInit"
+        if [[ -d "$configLocation" && -f "$configPostInit" ]]; then
+          source $configPostInit
+        fi
+
+        # otherwise something went wrong...
+      else
+        echo "ubash error: $current could not be localized ($coreLocation)!" >&2
+      fi
+    fi
+  done
+  unset coreDirectory
+  unset coreDependencyOrder
 fi
