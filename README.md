@@ -43,7 +43,7 @@ Install ubash locally:
 ```bash
 # enter in dev environment:
 devenv
-# runu the installation:
+# run the installation:
 ./install
 ```
 
@@ -57,7 +57,7 @@ source $UPIPE_DEV_ROOT/core/ubash/$UBASH_VERSION/env # <-
 source $UPIPE_DEV_ROOT/core/ubash/$UBASH_VERSION/init # <-
 ```
 
-### Building ubash for the first time
+### Installing ubash for the first time
 Make sure you have "jq" command installed, it can be download from:
 https://stedolan.github.io/jq/download/
 
