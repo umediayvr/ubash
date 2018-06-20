@@ -83,7 +83,7 @@ B) Deploying under the production area (by default it only deploys the version d
 ./install --production
 ```
 
-C) Deploying under the production area and making it available right away (means the version is going to be available for users having the UBASH_VERSION containing the release that is getting deployed):
+C) Deploying under the production area and making it available right away in new sessions (means the version is going to be available for users having the UBASH_VERSION containing the release that is getting deployed):
 ```bash
 # updates alpha beta and stable to point to the deployed version 
 ./install --production --update-all
