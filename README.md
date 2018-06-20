@@ -69,7 +69,7 @@ export PATH="/path/to/qbs/bin:$PATH"
 ```
 
 ### Installing ubash
-The instrucations are also applicable for all core & core-settings installs.
+The instructions below are also applicable for all core & core-settings installs.
 
 A) Deploying under the development area (only affects you):
 ```bash
