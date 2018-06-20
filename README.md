@@ -85,10 +85,10 @@ B) Deploying under the production area (by default it only deploys the version d
 
 C) Deploying under the production area and making it available right away in new sessions (means the version is going to be available for users having the UBASH_VERSION containing the release that is getting deployed):
 ```bash
-# updates alpha beta and stable to point to the deployed version 
+# installs and updates alpha beta and stable to point to the deployed version 
 ./install --production --update-all
 
-# or updating only alpha to point to the deployed version (more details can be found under `./install --help`)
+# installs and only updates alpha to point to the deployed version (more details can be found at `./install --help`)
 ./install --production --update-alpha
 ```
 
