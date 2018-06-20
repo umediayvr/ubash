@@ -66,12 +66,29 @@ ulauncher until you get ulauncher installed in your pipeline you will need to
 have QBS available in your search path in order to run the installation:
 ```bash
 export PATH="/path/to/qbs/bin:$PATH"
+```
 
-# A) deploying under the development area (only affects you)
+### Installing ubash
+The instrucations are also applicable for all core & core-settings installs.
+
+A) Deploying under the development area (only affects you):
+```bash
 ./install
-# the deployed version is only available under dev environment. Therefore, run "devenv" command
+# the deployed version is only available under dev environment. Therefore, in case you want to activate it run:
 devenv
+```
 
-# B) deploying under the production area (affects all users)
+B) Deploying under the production area (by default it only creates a new deployed version. This version does NOT linked to any release type) :
+```bash
 ./install --production
 ```
+
+C) Deploying under the production area and making it available right away (means the version is going to be available for users having the UBASH_VERSION pointing to the release getting deployed):
+```bash
+# updates alpha beta and stable to point to the deployed version 
+./install --production --update-all
+
+# or updating only alpha to point to the deployed version (more details can be found under `./install --help`)
+./install --production --update-alpha
+```
+
