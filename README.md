@@ -66,8 +66,13 @@ ulauncher until you get ulauncher installed in your pipeline you will need to
 have QBS available in your search path in order to run the installation:
 ```bash
 export PATH="/path/to/qbs/bin:$PATH"
-devenv
+
+# A) deploying under the development area (only affects you)
 ./install
-# or
+
+# after deplyoing under the development are that becomes available inside of the dev environment:
+devenv
+
+# B) deploying under the production area (affects all users)
 ./install --production
 ```
