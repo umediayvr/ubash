@@ -78,7 +78,7 @@ A) Deploying under the development area (only affects you):
 devenv
 ```
 
-B) Deploying under the production area (by default it only creates a new deployed version. This version does NOT linked to any release type) :
+B) Deploying under the production area (by default it only deploys the version data. This version is NOT linked to any release type. Since linking to release type can be done later):
 ```bash
 ./install --production
 ```
