@@ -69,8 +69,7 @@ export PATH="/path/to/qbs/bin:$PATH"
 
 # A) deploying under the development area (only affects you)
 ./install
-
-# after deplyoing under the development are that becomes available inside of the dev environment:
+# the deplyed version is only available under dev environment
 devenv
 
 # B) deploying under the production area (affects all users)
