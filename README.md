@@ -69,5 +69,5 @@ export PATH="/path/to/qbs/bin:$PATH"
 devenv
 ./install
 # or
-./install production
+./install --production
 ```
